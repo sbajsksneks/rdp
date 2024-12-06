@@ -15,33 +15,43 @@ jobs:
         curl -sSL https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-darwin-amd64.zip -o ngrok.zip
         unzip ngrok.zip
         rm ngrok.zip
+        # Verifikasi instalasi ngrok
+        ./ngrok version
+
     - name: Auth ngrok
-      run: ./ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+      run: |
+        ./ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+        # Verifikasi token ngrok
+        cat /Users/runner/Library/Application\ Support/ngrok/ngrok.yml
 
     - name: Enable Remote Login (SSH) and Install VNC
       run: |
         # Mengaktifkan remote login (SSH)
-        sudo systemsetup -setremotelogin on  # Aktifkan SSH
-        # Install TigerVNC
-        brew install tiger-vnc
-        # Pastikan PATH TigerVNC ada
-        echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
-        source ~/.zshrc
-        # Verifikasi lokasi vncserver
-        which vncserver
-        ls -l /opt/homebrew/bin/vncserver
+        sudo systemsetup -setremotelogin on
+        
+        # Install dan verifikasi instalasi TigerVNC
+        if ! command -v vncserver &>/dev/null; then
+          echo "VNC server tidak ditemukan, menginstall TigerVNC..."
+          brew install tiger-vnc
+        else
+          echo "VNC server sudah terinstal."
+        fi
+
         # Menjalankan VNC server pada port 5901
-        /opt/homebrew/bin/vncserver :1  # Menggunakan path penuh ke vncserver
-        # Verifikasi VNC server berjalan
-        ps aux | grep vncserver
+        if ! pgrep -f "vncserver :1" > /dev/null; then
+          /opt/homebrew/bin/vncserver :1
+          echo "VNC server berjalan pada port 5901"
+        else
+          echo "VNC server sudah berjalan pada port 5901."
+        fi
 
     - name: Create ngrok Tunnel for VNC
       run: |
         # Membuat tunnel untuk VNC melalui ngrok
-        ./ngrok tcp 5901 &  # Tunnel ke port 5901 untuk VNC
+        ./ngrok tcp 5901 &
         sleep 10  # Menunggu tunnel untuk stabil
-        # Verifikasi tunnel aktif
-        ps aux | grep ngrok
+        # Verifikasi tunnel ngrok
+        curl http://localhost:4040/api/tunnels
 
     - name: Keep action running to keep ngrok tunnel open
       run: |
