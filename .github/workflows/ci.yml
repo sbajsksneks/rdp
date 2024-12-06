@@ -8,21 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download
+    - name: Download ngrok
       run: curl -L https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip -o ngrok.zip
-    - name: Extract
+    - name: Extract ngrok
       run: unzip ngrok.zip
-    - name: Auth
+    - name: Auth ngrok
       run: ./ngrok authtoken $NGROK_AUTH_TOKEN
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-    - name: Enable Remote Desktop (RDP)
+    - name: Install GNOME and XRDP
       run: |
         sudo apt update
-        sudo apt install -y xrdp
+        sudo apt install -y ubuntu-gnome-desktop xrdp
         sudo systemctl enable xrdp
         sudo systemctl start xrdp
     - name: Set RDP Password
       run: echo "runneradmin:P@ssw0rd!" | sudo chpasswd
+    - name: Enable RDP through Firewall
+      run: sudo ufw allow 3389/tcp
     - name: Create Tunnel
       run: ./ngrok tcp 3389
