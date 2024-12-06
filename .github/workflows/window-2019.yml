@@ -36,6 +36,9 @@ jobs:
     - name: Restart RDP service to apply changes
       run: Restart-Service -Name TermService -Force
 
+    - name: Wait for RDP service restart
+      run: Start-Sleep -Seconds 5
+
     - name: Start ngrok tunnel in background (if not already running)
       run: |
         if (!(Test-Path "ngrok-tunnel.pid")) {
