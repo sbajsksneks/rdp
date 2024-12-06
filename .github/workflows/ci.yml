@@ -31,6 +31,7 @@ jobs:
         ./ngrok tcp 3389 &
         sleep 10 # Menunggu tunnel untuk stabil
 
-    - name: Run your application or services
+    - name: Keep action running to keep ngrok tunnel open
       run: |
-        echo "Your app or service is now running!"
+        echo "Ngrok tunnel is live. Keeping the action running..."
+        tail -f /dev/null  # Ini akan membuat GitHub Actions tetap berjalan (tidak selesai)
