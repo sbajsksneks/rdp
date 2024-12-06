@@ -34,10 +34,22 @@ jobs:
       id: ngrok
       run: |
         $process = Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow -PassThru
-        # Wait for ngrok to start and output its status
-        Start-Sleep -Seconds 5
-        # Get the ngrok URL
-        $ngrok_url = curl --silent --max-time 10 http://localhost:4040/api/tunnels | ConvertFrom-Json | Select-Object -ExpandProperty tunnels | Select-Object -First 1 | Select-Object -ExpandProperty public_url
+        # Loop to check if ngrok has started and has a valid public URL
+        $ngrok_url = ""
+        $maxRetries = 10
+        $retries = 0
+        while ($ngrok_url -eq "" -and $retries -lt $maxRetries) {
+          Write-Host "Checking ngrok status... Retry $($retries+1)"
+          Start-Sleep -Seconds 5
+          $ngrok_url = curl --silent --max-time 10 http://localhost:4040/api/tunnels | ConvertFrom-Json | Select-Object -ExpandProperty tunnels | Select-Object -First 1 | Select-Object -ExpandProperty public_url
+          $retries++
+        }
+        
+        if ($ngrok_url -eq "") {
+          Write-Host "Failed to start ngrok tunnel."
+          exit 1
+        }
+        
         Write-Host "Ngrok URL: $ngrok_url"
         echo "::set-output name=ngrok_url::$ngrok_url"
 
