@@ -24,3 +24,7 @@ jobs:
       run: systemsetup -getremotelogin
     - name: Create ngrok Tunnel for RDP
       run: ./ngrok tcp 3389
+    - name: Test ngrok Tunnel and RDP connection
+      run: |
+        echo "Testing ngrok Tunnel for RDP"
+        curl -s http://localhost:4040/api/tunnels
