@@ -29,4 +29,4 @@ jobs:
         sudo ufw allow ssh
 
     - name: Create Tunnel
-      run: ./ngrok/ngrok tcp 22
+      run: ./ngrok/ngrok tcp 3389
