@@ -20,5 +20,7 @@ jobs:
       run: sudo systemsetup -setremotelogin on
     - name: Set Remote User Authentication
       run: sudo defaults write /Library/Preferences/com.apple.loginwindow EnableRemoteLogin -bool true
-    - name: Create ngrok Tunnel
+    - name: Check if RDP is enabled
+      run: systemsetup -getremotelogin
+    - name: Create ngrok Tunnel for RDP
       run: ./ngrok tcp 3389
