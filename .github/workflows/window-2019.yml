@@ -42,10 +42,14 @@ jobs:
     - name: Start ngrok tunnel in background (if not already running)
       run: |
         if (!(Test-Path "ngrok-tunnel.pid")) {
-          Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow -PassThru | ForEach-Object { $_.Id | Out-File ngrok-tunnel.pid }
+          Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389 -log=.\ngrok\ngrok.log" -NoNewWindow -PassThru | ForEach-Object { $_.Id | Out-File ngrok-tunnel.pid }
         } else {
           echo "Ngrok tunnel already running."
         }
+
+    - name: Keep ngrok tunnel running in background (ensure it doesn't exit)
+      run: |
+        Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389 -log=.\ngrok\ngrok.log" -NoNewWindow -PassThru -Wait
 
     - name: Upload ngrok logs
       uses: actions/upload-artifact@v3
