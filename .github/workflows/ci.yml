@@ -21,5 +21,4 @@ jobs:
     - name: Set Remote User Authentication
       run: sudo defaults write /Library/Preferences/com.apple.loginwindow EnableRemoteLogin -bool true
     - name: Create ngrok Tunnel for RDP
-      run: ./ngrok tcp 3389
-      run: curl http://localhost:4040/api/tunnels
+      run: ./ngrok tcp 3389 curl http://localhost:4040/api/tunnels
