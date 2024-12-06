@@ -24,6 +24,12 @@ jobs:
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         # Require User Authentication
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+    - name: Disable Password Complexity Policy
+      run: |
+        # Disable the password complexity policy
+        secedit /configure /cfg C:\Windows\security\database\secpol.cfg
+        # Set password length requirements to a minimal value
+        secedit /configure /cfg C:\Windows\security\database\secpol.cfg
     - name: Create user faiz if not exists
       run: |
         if (-not (Get-LocalUser -Name "faiz" -ErrorAction SilentlyContinue)) {
