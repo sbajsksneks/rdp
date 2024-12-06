@@ -19,7 +19,7 @@ jobs:
     - name: Auth ngrok
       run: ./ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
 
-    - name: Enable Remote Desktop (VNC)
+    - name: Enable Remote Login (VNC)
       run: |
         # Mengaktifkan remote login (SSH)
         sudo systemsetup -setremotelogin on  # Aktifkan SSH
@@ -27,6 +27,12 @@ jobs:
         # Menambahkan path TigerVNC ke PATH jika perlu
         echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.bash_profile
         source ~/.bash_profile
+        
+        # Verifikasi lokasi vncserver
+        which vncserver
+        # Cek apakah vncserver ada di lokasi yang benar
+        ls -l /opt/homebrew/bin/vncserver
+        
         # Menjalankan VNC server pada port 5901
         /opt/homebrew/bin/vncserver :1  # Menggunakan path penuh ke vncserver
 
