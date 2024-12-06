@@ -30,29 +30,23 @@ jobs:
     - name: Set local user password
       run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
 
-    - name: Start ngrok tunnel
+    - name: Start ngrok tunnel in background
       id: ngrok
       run: |
-        $process = Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow -PassThru
-        # Loop to check if ngrok has started and has a valid public URL
-        $ngrok_url = ""
-        $maxRetries = 10
-        $retries = 0
-        while ($ngrok_url -eq "" -and $retries -lt $maxRetries) {
-          Write-Host "Checking ngrok status... Retry $($retries+1)"
-          Start-Sleep -Seconds 5
-          $ngrok_url = curl --silent --max-time 10 http://localhost:4040/api/tunnels | ConvertFrom-Json | Select-Object -ExpandProperty tunnels | Select-Object -First 1 | Select-Object -ExpandProperty public_url
-          $retries++
-        }
-        
-        if ($ngrok_url -eq "") {
-          Write-Host "Failed to start ngrok tunnel."
-          exit 1
-        }
-        
+        Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow
+        # Wait for ngrok to initialize
+        Start-Sleep -Seconds 5
+        # Get the ngrok URL
+        $ngrok_url = curl --silent --max-time 10 http://localhost:4040/api/tunnels | ConvertFrom-Json | Select-Object -ExpandProperty tunnels | Select-Object -First 1 | Select-Object -ExpandProperty public_url
         Write-Host "Ngrok URL: $ngrok_url"
         echo "::set-output name=ngrok_url::$ngrok_url"
 
+    - name: Keep GitHub Action Running
+      run: |
+        # Infinite loop to keep the action running and ngrok alive
+        Write-Host "GitHub Action is running and ngrok tunnel is open. Press Ctrl+C to stop."
+        while ($true) { Start-Sleep -Seconds 3600 }
+      
     - name: Display ngrok URL
       run: |
         echo "Ngrok tunnel is available at: ${{ steps.ngrok.outputs.ngrok_url }}"
