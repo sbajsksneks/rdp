@@ -15,7 +15,6 @@ jobs:
         curl -sSL https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-darwin-amd64.zip -o ngrok.zip
         unzip ngrok.zip
         rm ngrok.zip
-
     - name: Auth ngrok
       run: ./ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
 
@@ -23,24 +22,26 @@ jobs:
       run: |
         # Mengaktifkan remote login (SSH)
         sudo systemsetup -setremotelogin on  # Aktifkan SSH
-
-        # Install TigerVNC dan pastikan pathnya benar
-        brew install tiger-vnc  # Install TigerVNC
-        echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.bashrc
-        source ~/.bashrc
-
+        # Install TigerVNC
+        brew install tiger-vnc
+        # Pastikan PATH TigerVNC ada
+        echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
+        source ~/.zshrc
         # Verifikasi lokasi vncserver
         which vncserver
         ls -l /opt/homebrew/bin/vncserver
-
         # Menjalankan VNC server pada port 5901
         /opt/homebrew/bin/vncserver :1  # Menggunakan path penuh ke vncserver
+        # Verifikasi VNC server berjalan
+        ps aux | grep vncserver
 
     - name: Create ngrok Tunnel for VNC
       run: |
         # Membuat tunnel untuk VNC melalui ngrok
         ./ngrok tcp 5901 &  # Tunnel ke port 5901 untuk VNC
         sleep 10  # Menunggu tunnel untuk stabil
+        # Verifikasi tunnel aktif
+        ps aux | grep ngrok
 
     - name: Keep action running to keep ngrok tunnel open
       run: |
