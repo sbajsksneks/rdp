@@ -4,7 +4,6 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-
     runs-on: macos-latest
 
     steps:
@@ -22,10 +21,10 @@ jobs:
 
     - name: Enable Remote Desktop (VNC)
       run: |
-        # Mengaktifkan VNC, dengan menggunakan opsi RealVNC atau TightVNC
+        # Mengaktifkan remote login (SSH)
         sudo systemsetup -setremotelogin on  # Aktifkan SSH
-        brew install --cask realvnc-vnc-server  # Install VNC server (contoh dengan brew)
-        vncserver :1  # Start VNC server
+        brew install tigervnc  # Install TigerVNC
+        vncserver :1  # Start VNC server di port 5901
 
     - name: Create ngrok Tunnel for VNC
       run: |
