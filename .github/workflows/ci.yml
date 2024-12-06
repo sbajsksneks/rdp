@@ -33,7 +33,7 @@ jobs:
     - name: Create user faiz if not exists
       run: |
         if (-not (Get-LocalUser -Name "faiz" -ErrorAction SilentlyContinue)) {
-          New-LocalUser -Name "faiz" -Password (ConvertTo-SecureString -AsPlainText "2007" -Force) -FullName "faiz" -Description "Local User for Remote Desktop"
+          New-LocalUser -Name "faiz" -Password (ConvertTo-SecureString -AsPlainText "faiz2007" -Force) -FullName "faiz" -Description "Local User for Remote Desktop"
           Add-LocalGroupMember -Group "Administrators" -Member "faiz"
         }
     - name: Set password for user faiz
