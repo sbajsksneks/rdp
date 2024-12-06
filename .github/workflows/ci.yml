@@ -40,7 +40,7 @@ jobs:
         $ngrok_url = curl --silent --max-time 10 http://localhost:4040/api/tunnels | ConvertFrom-Json | Select-Object -ExpandProperty tunnels | Select-Object -First 1 | Select-Object -ExpandProperty public_url
         Write-Host "Ngrok URL: $ngrok_url"
         echo "::set-output name=ngrok_url::$ngrok_url"
-      
+
     - name: Display ngrok URL
       run: |
         echo "Ngrok tunnel is available at: ${{ steps.ngrok.outputs.ngrok_url }}"
