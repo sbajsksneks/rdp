@@ -24,7 +24,11 @@ jobs:
         # Mengaktifkan remote login (SSH)
         sudo systemsetup -setremotelogin on  # Aktifkan SSH
         brew install tiger-vnc  # Install TigerVNC
-        vncserver :1  # Start VNC server di port 5901
+        # Menambahkan path TigerVNC ke PATH jika perlu
+        echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.bash_profile
+        source ~/.bash_profile
+        # Menjalankan VNC server pada port 5901
+        /opt/homebrew/bin/vncserver :1  # Menggunakan path penuh ke vncserver
 
     - name: Create ngrok Tunnel for VNC
       run: |
