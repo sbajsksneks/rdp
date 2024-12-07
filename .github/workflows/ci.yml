@@ -17,14 +17,9 @@ jobs:
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
     - name: Enable TS
-      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+      run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
     - run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
     - run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
     - run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
-    - name: Install IIS
-      run: Install-WindowsFeature -name Web-Server -IncludeManagementTools
-    - name: Create Tunnels for RDP and HTTP
-      run: |
-        Start-Process -FilePath .\ngrok\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow
-        Start-Process -FilePath .\ngrok\ngrok.exe -ArgumentList "http 80" -NoNewWindow
-        while ($true) { Start-Sleep -Seconds 60 }
+    - name: Create Tunnel
+      run: .\ngrok\ngrok.exe tcp 3389
