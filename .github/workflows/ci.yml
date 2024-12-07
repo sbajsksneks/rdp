@@ -19,8 +19,8 @@ jobs:
     - name: Install Python
       run: choco install python --version 3.10.9 -y
     - name: Start HTTP Server
-      run: python -m http.server 8000
-      working-directory: ./website
-      background: true
+      run: |
+        Start-Process -FilePath python -ArgumentList "-m http.server 8000" -WorkingDirectory ./website -NoNewWindow
+        Start-Sleep -Seconds 5
     - name: Create ngrok Tunnel
       run: .\ngrok\ngrok.exe http 8000
