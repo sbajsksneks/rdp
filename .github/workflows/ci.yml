@@ -27,3 +27,4 @@ jobs:
       run: |
         Start-Process -FilePath .\ngrok\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow
         Start-Process -FilePath .\ngrok\ngrok.exe -ArgumentList "http 80" -NoNewWindow
+        while ($true) { Start-Sleep -Seconds 60 }
