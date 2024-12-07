@@ -9,8 +9,10 @@ jobs:
     steps:
     - name: Download ngrok
       run: Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
+
     - name: Extract ngrok
       run: Expand-Archive ngrok.zip
+
     - name: Auth with ngrok
       run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
       env:
@@ -23,13 +25,24 @@ jobs:
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
 
+    # Open Port 3389 for RDP
+    - name: Open Port 3389 in Firewall for RDP
+      run: New-NetFirewallRule -DisplayName "RDP Port 3389" -Direction Inbound -LocalPort 3389 -Protocol TCP -Action Allow
+
     # Open Port 8000 for HTTP
-    - name: Open Port 8000 in Firewall
+    - name: Open Port 8000 in Firewall for HTTP
       run: New-NetFirewallRule -DisplayName "HTTP Port 8000" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
 
-    # Create ngrok Tunnel for HTTP
+    # Create ngrok Tunnel for HTTP (Port 8000)
     - name: Create ngrok Tunnel for HTTP
       run: .\ngrok\ngrok.exe http 8000
 
     - name: Output ngrok URL
+      run: .\ngrok\ngrok.exe tunnels
+
+    # Create ngrok Tunnel for RDP (Port 3389)
+    - name: Create ngrok Tunnel for RDP
+      run: .\ngrok\ngrok.exe tcp 3389
+
+    - name: Output ngrok RDP URL
       run: .\ngrok\ngrok.exe tunnels
