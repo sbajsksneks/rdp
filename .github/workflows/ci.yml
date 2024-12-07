@@ -1,10 +1,9 @@
-name: Host Website
+name: VPS Hosting Setup
 
 on: [push, workflow_dispatch]
 
 jobs:
-  host-website:
-
+  setup-vps:
     runs-on: windows-latest
 
     steps:
@@ -16,12 +15,21 @@ jobs:
       run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-    - name: Install Python
-      run: choco install python -y
 
-    - name: Start HTTP Server
+    # Enable Remote Desktop Protocol (RDP)
+    - name: Enable Remote Desktop (RDP)
       run: |
-        Start-Process -FilePath python -ArgumentList "-m http.server 8000" -WorkingDirectory ./website -NoNewWindow
-        Start-Sleep -Seconds 5
-    - name: Create ngrok Tunnel
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+
+    # Open Port 8000 for HTTP
+    - name: Open Port 8000 in Firewall
+      run: New-NetFirewallRule -DisplayName "HTTP Port 8000" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+
+    # Create ngrok Tunnel for HTTP
+    - name: Create ngrok Tunnel for HTTP
       run: .\ngrok\ngrok.exe http 8000
+
+    - name: Output ngrok URL
+      run: .\ngrok\ngrok.exe tunnels
