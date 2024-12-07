@@ -33,16 +33,11 @@ jobs:
     - name: Open Port 8000 in Firewall for HTTP
       run: New-NetFirewallRule -DisplayName "HTTP Port 8000" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
 
-    # Create ngrok Tunnel for HTTP (Port 8000)
-    - name: Create ngrok Tunnel for HTTP
-      run: .\ngrok\ngrok.exe http 8000
+    # Create ngrok Tunnel for HTTP and RDP together
+    - name: Create ngrok Tunnel for HTTP and RDP
+      run: |
+        Start-Process .\ngrok\ngrok.exe http 8000 -NoNewWindow -PassThru
+        Start-Process .\ngrok\ngrok.exe tcp 3389 -NoNewWindow -PassThru
 
     - name: Output ngrok URL
-      run: .\ngrok\ngrok.exe tunnels
-
-    # Create ngrok Tunnel for RDP (Port 3389)
-    - name: Create ngrok Tunnel for RDP
-      run: .\ngrok\ngrok.exe tcp 3389
-
-    - name: Output ngrok RDP URL
       run: .\ngrok\ngrok.exe tunnels
