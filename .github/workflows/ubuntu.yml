@@ -34,5 +34,11 @@ jobs:
         sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
         sudo systemctl restart ssh
 
+    - name: Create User
+      run: |
+        sudo useradd -m runneradmin
+        echo "runneradmin:P@ssw0rd!" | sudo chpasswd
+        sudo usermod -aG sudo runneradmin
+
     - name: Create Tunnel
       run: ./ngrok tcp 22
