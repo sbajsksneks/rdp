@@ -44,5 +44,9 @@ jobs:
           echo "User 'runneradmin' already exists."
         fi
 
+    - name: Restart SSH Service (Optional)
+      run: |
+        sudo systemctl restart ssh
+
     - name: Create Tunnel
       run: ./ngrok tcp 22
