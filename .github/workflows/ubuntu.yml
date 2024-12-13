@@ -34,11 +34,15 @@ jobs:
         sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
         sudo systemctl restart ssh
 
-    - name: Create User
+    - name: Create User (If Not Exists)
       run: |
-        sudo useradd -m runneradmin
-        echo "runneradmin:P@ssw0rd!" | sudo chpasswd
-        sudo usermod -aG sudo runneradmin
+        if ! id "runneradmin" &>/dev/null; then
+          sudo useradd -m runneradmin
+          echo "runneradmin:P@ssw0rd!" | sudo chpasswd
+          sudo usermod -aG sudo runneradmin
+        else
+          echo "User 'runneradmin' already exists."
+        fi
 
     - name: Create Tunnel
       run: ./ngrok tcp 22
